@@ -2,6 +2,7 @@ package com.example.android.calculatoralbertsen;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,8 +15,11 @@ public class MainActivity extends AppCompatActivity {
 
     EditText output;
 
+    float currVal, eqVal;
+    int currOp = 0;
+
     final int NULL = 0;
-    final int ADD =1;
+    final int ADD = 1;
     final int SUB = 2;
     final int MUL = 3;
     final int DIV = 4;
@@ -46,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         clearAll = findViewById(R.id.clearAll);
         decimal = findViewById(R.id.decimal);
         output = findViewById(R.id.output);
+        output.setShowSoftInputOnFocus(false);
 
         // setting the click listeners
         zero.setOnClickListener(new View.OnClickListener() {
@@ -118,49 +123,131 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        decimal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                output.setText(output.getText() + getString(R.string.decimal));
+            }
+        });
+
         plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                logOp(ADD);
             }
         });
 
         minus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                logOp(SUB);
             }
         });
 
         multiply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                logOp(MUL);
             }
         });
 
         divide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                logOp(DIV);
+            }
+        });
 
+        equals.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calc();
+            }
+        });
+
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                output.setText(null);
+            }
+        });
+
+        clearAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                output.setText(null);
+                currOp = NULL;
+                currVal = 0;
+            }
+        });
+
+        polarity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!output.getText().toString().equals("")) {
+                    currVal = Float.parseFloat(output.getText().toString()) * -1;
+                    output.setText(Float.toString(currVal));
+                }
             }
         });
     }
 
-    public void equals() {
+    public void logOp(int ID) {
+        if (!output.getText().toString().equals("")) {
+            currVal = Float.parseFloat(output.getText().toString());
+            Log.i("VALUE", Float.toString(currVal));
+            output.setText(null);
+            currOp = ID;
+        }
+    }
 
+    public void calc() {
+        try {
+            switch (currOp) {
+                case ADD:
+                    currVal = currVal + Float.parseFloat(output.getText().toString());
+                    eqVal = currVal;
+                    Log.i("VALUE", Float.toString(currVal));
+                    break;
+                case SUB:
+                    currVal = currVal - Float.parseFloat(output.getText().toString());
+                    eqVal = currVal;
+                    Log.i("VALUE", Float.toString(currVal));
+
+                    break;
+                case MUL:
+                    currVal = currVal * Float.parseFloat(output.getText().toString());
+                    eqVal = currVal;
+                    Log.i("VALUE", Float.toString(currVal));
+
+                    break;
+                case DIV:
+                    currVal = currVal / Float.parseFloat(output.getText().toString());
+                    eqVal = currVal;
+                    Log.i("VALUE", Float.toString(currVal));
+
+                    break;
+                default:
+                    // do something when there's no operation?
+                    eqVal = Float.parseFloat(output.getText().toString());
+                    break;
+            }
+            currOp = NULL;
+            output.setText(Float.toString(eqVal));
+            Log.i("VALUE", Float.toString(eqVal));
+
+        } catch (NullPointerException e) {
+            Log.e("ERROR", "Null Pointer Exception");
+        }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-//        savedInstanceState.putInt("count", count);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-//        count = savedInstanceState.getInt("count");
-//        test.setText(Integer.toString(count));
     }
 }
